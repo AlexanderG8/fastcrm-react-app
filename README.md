@@ -19,7 +19,10 @@ FastCRM React App es una aplicación web desarrollada con React y Vite que permi
   - Confirmación de eliminación exitosa
   - Notificaciones de error en caso de fallos
 
-- **Búsqueda de Plantillas**: Campo de búsqueda que permite filtrar plantillas por su contenido, facilitando la localización rápida de información específica.
+- **Búsqueda de Plantillas**: 
+  - Campo de búsqueda que permite filtrar plantillas por palabras clave en su contenido
+  - Filtrado por tipo de mensaje (bienvenida, notificación, recordatorio, seguimiento, etc.)
+  - Combinación de ambos filtros para búsquedas más precisas
 
 ## Tecnologías Utilizadas
 
@@ -92,7 +95,12 @@ FastCRM React App es una aplicación web desarrollada con React y Vite que permi
 4. **Buscar plantillas**:
    - Utiliza el campo de búsqueda ubicado encima de la tabla de plantillas
    - Escribe el texto que deseas encontrar en el contenido de las plantillas
-   - La tabla se filtrará automáticamente mostrando solo las plantillas que coincidan
+   - Selecciona un tipo de mensaje específico en el selector de tipo
+   - La tabla se filtrará automáticamente mostrando solo las plantillas que coincidan con ambos criterios
+   - Los filtros se aplican en tiempo real al API mediante los endpoints:
+     - `/api/templates?q=palabra` para búsqueda por palabra clave
+     - `/api/templates?type=welcome` para filtrado por tipo
+     - `/api/templates?q=palabra&type=welcome` para combinar ambos filtros
 
 ## Desarrollo
 

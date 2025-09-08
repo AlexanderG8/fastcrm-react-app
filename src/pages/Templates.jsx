@@ -26,12 +26,32 @@ const Templates = () => {
   
   // Estado para el término de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Estado para el filtro de tipo
+  const [typeFilter, setTypeFilter] = useState('');
 
   // Función para obtener todas las plantillas
-  const fetchTemplates = async () => {
+  const fetchTemplates = async (searchQuery = '', typeFilter = '') => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/templates');
+      // Construir la URL con los parámetros de búsqueda y filtro
+      let url = 'http://localhost:3000/api/templates';
+      const params = new URLSearchParams();
+      
+      if (searchQuery) {
+        params.append('q', searchQuery);
+      }
+      
+      if (typeFilter) {
+        params.append('type', typeFilter);
+      }
+      
+      // Añadir los parámetros a la URL si existen
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
+      const response = await fetch(url);
       
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
@@ -48,10 +68,10 @@ const Templates = () => {
     }
   };
 
-  // Cargar plantillas al montar el componente
+  // Cargar plantillas al montar el componente o cuando cambien los filtros
   useEffect(() => {
-    fetchTemplates();
-  }, []);
+    fetchTemplates(searchTerm, typeFilter);
+  }, [searchTerm, typeFilter]);
 
   // Función para crear una nueva plantilla
   const createTemplate = async (templateData) => {
@@ -185,8 +205,9 @@ const Templates = () => {
         />
       )}
 
-      {/* Campo de búsqueda */}
-      <div className="mb-4">
+      {/* Filtros de búsqueda */}
+      <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Campo de búsqueda por palabra clave */}
         <div className="relative">
           <input
             type="text"
@@ -200,6 +221,22 @@ const Templates = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
+        </div>
+        
+        {/* Filtro por tipo de mensaje */}
+        <div>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Todos los tipos</option>
+            <option value="welcome">Bienvenida</option>
+            <option value="notificaciones">Notificación</option>
+            <option value="recordatorios">Recordatorio</option>
+            <option value="seguimiento">Seguimiento</option>
+            <option value="otros">Otro</option>
+          </select>
         </div>
       </div>
 
@@ -234,12 +271,7 @@ const Templates = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {templates
-                  .filter(template => 
-                    searchTerm === '' || 
-                    template.content.toLowerCase().includes(searchTerm.toLowerCase())
-                  )
-                  .map((template) => (
+                {templates.map((template) => (
                   <tr key={template._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{template.type}</div>

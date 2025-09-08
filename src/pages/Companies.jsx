@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import ContactForm from '../components/ContactForm';
+import CompanyForm from '../components/CompanyForm';
 import { toast } from 'react-toastify';
-import { getContacts, createContact, updateContact, deleteContact } from '../services/contactService';
+import { getCompanies, createCompany, updateCompany, deleteCompany } from '../services/companyService';
 
 /**
- * Página principal para la gestión de contactos
+ * Página principal para la gestión de empresas
  */
-const Contacts = () => {
-  // Estado para almacenar todos los contactos (sin filtrar)
-  const [allContacts, setAllContacts] = useState([]);
+const Companies = () => {
+  // Estado para almacenar todas las empresas (sin filtrar)
+  const [allCompanies, setAllCompanies] = useState([]);
   
-  // Estado para almacenar la lista de contactos filtrados que se mostrarán
-  const [contacts, setContacts] = useState([]);
+  // Estado para almacenar la lista de empresas filtradas que se mostrarán
+  const [companies, setCompanies] = useState([]);
   
   // Estado para controlar la carga de datos
   const [loading, setLoading] = useState(true);
@@ -22,8 +22,8 @@ const Contacts = () => {
   // Estado para controlar el modo de edición
   const [editMode, setEditMode] = useState(false);
   
-  // Estado para almacenar el contacto que se está editando
-  const [currentContact, setCurrentContact] = useState(null);
+  // Estado para almacenar la empresa que se está editando
+  const [currentCompany, setCurrentCompany] = useState(null);
   
   // Estado para controlar la visibilidad del formulario
   const [showForm, setShowForm] = useState(false);
@@ -31,130 +31,133 @@ const Contacts = () => {
   // Estado para el término de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Función para obtener todos los contactos desde la API
-  const fetchContacts = async () => {
+  // Función para obtener todas las empresas desde la API
+  const fetchCompanies = async () => {
     setLoading(true);
     try {
-      const data = await getContacts();
-      setAllContacts(data);
-      setContacts(data); // Inicialmente mostramos todos los contactos
+      const data = await getCompanies();
+      setAllCompanies(data);
+      setCompanies(data); // Inicialmente mostramos todas las empresas
       setError(null);
     } catch (err) {
-      toast.error('Error al cargar los contactos. Por favor, intenta de nuevo.');
-      console.error('Error fetching contacts:', err);
-      setError('No se pudieron cargar los contactos');
-      setAllContacts([]);
-      setContacts([]);
+      toast.error('Error al cargar las empresas. Por favor, intenta de nuevo.');
+      console.error('Error fetching companies:', err);
+      setError('No se pudieron cargar las empresas');
+      setAllCompanies([]);
+      setCompanies([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para filtrar contactos localmente
-  const filterContacts = (contactsToFilter = allContacts, term = searchTerm) => {
+  // Función para filtrar empresas localmente
+  const filterCompanies = (companiesToFilter = allCompanies, term = searchTerm) => {
     if (!term.trim()) {
-      // Si no hay término de búsqueda, mostrar todos los contactos
-      setContacts(contactsToFilter);
+      // Si no hay término de búsqueda, mostrar todas las empresas
+      setCompanies(companiesToFilter);
       return;
     }
     
-    // Filtrar contactos que contengan el término de búsqueda en el nombre o WhatsApp
-    const filtered = contactsToFilter.filter(contact => 
-      contact.name.toLowerCase().includes(term.toLowerCase()) || 
-      (contact.whatsapp && contact.whatsapp.includes(term))
+    // Filtrar empresas que contengan el término de búsqueda en el nombre o RUC
+    const filtered = companiesToFilter.filter(company => 
+      company.name.toLowerCase().includes(term.toLowerCase()) || 
+      (company.ruc && company.ruc.includes(term))
     );
     
-    setContacts(filtered);
+    setCompanies(filtered);
   };
 
-  // Cargar contactos al montar el componente
+  // Cargar empresas al montar el componente
   useEffect(() => {
-    fetchContacts();
+    fetchCompanies();
   }, []);
   
-  // Filtrar contactos cuando cambie el término de búsqueda o la lista de contactos
+  // Filtrar empresas cuando cambie el término de búsqueda o la lista de empresas
   useEffect(() => {
-    filterContacts();
-  }, [searchTerm, allContacts]);
+    filterCompanies();
+  }, [searchTerm, allCompanies]);
 
-  // Función para crear un nuevo contacto
-  const handleCreateContact = async (contactData) => {
+  // Función para crear una nueva empresa
+  const handleCreateCompany = async (companyData) => {
     try {
-      const newContact = await createContact(contactData);
+      const newCompany = await createCompany(companyData);
       // Actualizar ambos estados
-      const updatedContacts = [...allContacts, newContact.contact];
-      console.log(newContact);
-      console.log(updatedContacts);
-      setAllContacts(updatedContacts);
+      const updatedCompanies = [...allCompanies, newCompany.company];
+      setAllCompanies(updatedCompanies);
       // Aplicar el filtro actual a la lista actualizada
-      filterContacts(updatedContacts);
+      filterCompanies(updatedCompanies);
       
       setShowForm(false);
-      toast.success('Contacto creado exitosamente');
+      toast.success('Empresa creada exitosamente');
     } catch (err) {
-      toast.error('Error al crear el contacto. Por favor, intenta de nuevo.');
-      console.error('Error creating contact:', err);
+      toast.error('Error al crear la empresa. Por favor, intenta de nuevo.');
+      console.error('Error creating company:', err);
     }
   };
 
-  // Función para actualizar un contacto existente
-  const handleUpdateContact = async (contactData) => {
+  // Función para actualizar una empresa existente
+  const handleUpdateCompany = async (companyData) => {
     try {
-      const updatedContact = await updateContact(contactData.id, contactData);
+      const updatedCompany = await updateCompany(companyData.id, companyData);
       
-      // Actualizar el contacto en ambos estados
-      const updatedAllContacts = allContacts.map(contact => 
-        contact.id === updatedContact.id ? updatedContact : contact
+      // Actualizar la empresa en ambos estados
+      const updatedAllCompanies = allCompanies.map(company => 
+        company.id === updatedCompany.company.id ? updatedCompany.company : company
       );
       
-      setAllContacts(updatedAllContacts);
+      setAllCompanies(updatedAllCompanies);
       // Aplicar el filtro actual a la lista actualizada
-      filterContacts(updatedAllContacts);
+      filterCompanies(updatedAllCompanies);
       
       setShowForm(false);
       setEditMode(false);
-      setCurrentContact(null);
-      toast.success('Contacto actualizado exitosamente');
+      setCurrentCompany(null);
+      toast.success('Empresa actualizada exitosamente');
     } catch (err) {
-      toast.error('Error al actualizar el contacto. Por favor, intenta de nuevo.');
-      console.error('Error updating contact:', err);
+      toast.error('Error al actualizar la empresa. Por favor, intenta de nuevo.');
+      console.error('Error updating company:', err);
     }
   };
 
-  // Función para eliminar un contacto
-  const handleDeleteContact = async (id) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este contacto?')) {
+  // Función para eliminar una empresa
+  const handleDeleteCompany = async (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta empresa?')) {
       try {
-        await deleteContact(id);
+        const response = await deleteCompany(id);
         
-        // Eliminar el contacto de ambos estados
-        const updatedAllContacts = allContacts.filter(contact => contact.id !== id);
-        setAllContacts(updatedAllContacts);
+        // Verificar si hay un error en la respuesta
+        if (response.error) {
+          toast.error(response.error);
+          return;
+        }
+        
+        // Eliminar la empresa de ambos estados
+        const updatedAllCompanies = allCompanies.filter(company => company.id !== id);
+        setAllCompanies(updatedAllCompanies);
         // Aplicar el filtro actual a la lista actualizada
-        filterContacts(updatedAllContacts);
+        filterCompanies(updatedAllCompanies);
         
-        toast.success('Contacto eliminado exitosamente');
+        toast.success('Empresa eliminada exitosamente');
       } catch (err) {
-        toast.error('Error al eliminar el contacto. Por favor, intenta de nuevo.');
-        console.error('Error deleting contact:', err);
+        toast.error('Error al eliminar la empresa. Por favor, intenta de nuevo.');
+        console.error('Error deleting company:', err);
       }
     }
   };
 
-  // Función para iniciar la edición de un contacto
-  const handleEditContact = (contact) => {
-    setCurrentContact(contact);
+  // Función para iniciar la edición de una empresa
+  const handleEditCompany = (company) => {
+    setCurrentCompany(company);
     setEditMode(true);
     setShowForm(true);
   };
   
-
   // Función para manejar el envío del formulario
   const handleFormSubmit = (formData) => {
     if (editMode) {
-      handleUpdateContact(formData);
+      handleUpdateCompany(formData);
     } else {
-      handleCreateContact(formData);
+      handleCreateCompany(formData);
     }
   };
 
@@ -162,7 +165,7 @@ const Contacts = () => {
   const handleCancel = () => {
     setShowForm(false);
     setEditMode(false);
-    setCurrentContact(null);
+    setCurrentCompany(null);
   };
 
   // Función para formatear la fecha
@@ -174,21 +177,21 @@ const Contacts = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Gestión de Contactos</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Gestión de Empresas</h1>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
           >
-            Nuevo Contacto
+            Nueva Empresa
           </button>
         )}
       </div>
 
-      {/* Formulario para crear/editar contactos */}
+      {/* Formulario para crear/editar empresas */}
       {showForm && (
-        <ContactForm
-          contactToEdit={editMode ? currentContact : null}
+        <CompanyForm
+          companyToEdit={editMode ? currentCompany : null}
           onSubmit={handleFormSubmit}
           onCancel={handleCancel}
         />
@@ -199,7 +202,7 @@ const Contacts = () => {
         <div className="relative">
           <input
             type="text"
-            placeholder="Buscar contacto..."
+            placeholder="Buscar empresa..."
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -212,7 +215,7 @@ const Contacts = () => {
         </div>
       </div>
 
-      {/* Tabla de contactos */}
+      {/* Tabla de empresas */}
       {loading ? (
         <div className="flex justify-center items-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -222,9 +225,9 @@ const Contacts = () => {
           <strong className="font-bold">Error:</strong>
           <span className="block sm:inline"> {error}</span>
         </div>
-      ) : contacts.length === 0 ? (
+      ) : companies.length === 0 ? (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
-          <span className="block sm:inline">No hay contactos disponibles. ¡Crea uno nuevo!</span>
+          <span className="block sm:inline">No hay empresas disponibles. ¡Crea una nueva!</span>
         </div>
       ) : (
         <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto">
@@ -235,13 +238,13 @@ const Contacts = () => {
                   Nombre
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  WhatsApp
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Empresa
+                  RUC
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Fecha de Creación
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Contactos
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Acciones
@@ -249,35 +252,32 @@ const Contacts = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {Array.isArray(contacts) && contacts.length > 0 ? (
-                contacts.map((contact) => (
-                  <tr key={contact.id} className="hover:bg-gray-50">
+              {companies.length > 0 ? (
+                companies.map((company) => (
+                  <tr key={company.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{contact.name}</div>
+                      <div className="text-sm font-medium text-gray-900">{company.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{contact.whatsapp}</div>
+                      <div className="text-sm text-gray-500">{company.ruc}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {contact.company ? contact.company.name : 'Sin empresa'}
+                      <div className="text-sm text-gray-500">{formatDate(company.createAt)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {company.contacts ? company.contacts.length : 0} contactos
                       </div>
-                      {contact.company && (
-                        <div className="text-xs text-gray-500">RUC: {contact.company.ruc}</div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{formatDate(contact.createdAt || contact.createAt)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                         onClick={() => handleEditContact(contact)}
-                         className="text-indigo-600 hover:text-indigo-900 mr-3"
-                       >
-                         Editar
-                       </button>
+                        onClick={() => handleEditCompany(company)}
+                        className="text-indigo-600 hover:text-indigo-900 mr-3"
+                      >
+                        Editar
+                      </button>
                       <button
-                        onClick={() => handleDeleteContact(contact.id)}
+                        onClick={() => handleDeleteCompany(company.id)}
                         className="text-red-600 hover:text-red-900"
                       >
                         Eliminar
@@ -288,7 +288,7 @@ const Contacts = () => {
               ) : (
                 <tr>
                   <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
-                    No hay contactos disponibles
+                    No hay empresas disponibles
                   </td>
                 </tr>
               )}
@@ -300,4 +300,4 @@ const Contacts = () => {
   );
 };
 
-export default Contacts;
+export default Companies;

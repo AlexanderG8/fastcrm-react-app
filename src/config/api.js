@@ -8,7 +8,8 @@ export const API_URL = 'http://localhost:3000';
 // Endpoints de la API
 export const ENDPOINTS = {
   TEMPLATES: '/api/templates',
-  CONTACTS: '/api/contacts'
+  CONTACTS: '/api/contacts',
+  COMPANIES: '/api/companies'
 };
 
 // Configuración para las peticiones fetch

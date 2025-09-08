@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getCompanies } from '../services/companyService';
 
 /**
  * Componente de formulario para crear o editar contactos
@@ -12,8 +13,12 @@ const ContactForm = ({ contactToEdit, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     id: '',
     name: '',
-    whatsapp: ''
+    whatsapp: '',
+    companyId: ''
   });
+  
+  // Estado para almacenar la lista de empresas
+  const [companies, setCompanies] = useState([]);
 
   // Estado para manejar errores de validación
   const [errors, setErrors] = useState({});
@@ -24,10 +29,25 @@ const ContactForm = ({ contactToEdit, onSubmit, onCancel }) => {
       setFormData({
         id: contactToEdit.id || '',
         name: contactToEdit.name || '',
-        whatsapp: contactToEdit.whatsapp || ''
+        whatsapp: contactToEdit.whatsapp || '',
+        companyId: contactToEdit.companyId || ''
       });
     }
   }, [contactToEdit]);
+  
+  // Cargar la lista de empresas
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const companiesData = await getCompanies();
+        setCompanies(companiesData);
+      } catch (error) {
+        console.error('Error al cargar las empresas:', error);
+      }
+    };
+    
+    fetchCompanies();
+  }, []);
 
   // Manejar cambios en los campos del formulario
   const handleChange = (e) => {
@@ -62,6 +82,11 @@ const ContactForm = ({ contactToEdit, onSubmit, onCancel }) => {
       newErrors.whatsapp = 'Ingrese un número de WhatsApp válido';
     }
     
+    // Validar empresa (requerido)
+    if (!formData.companyId) {
+      newErrors.companyId = 'Debe seleccionar una empresa';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -76,7 +101,8 @@ const ContactForm = ({ contactToEdit, onSubmit, onCancel }) => {
       if (!contactToEdit) {
         setFormData({
           name: '',
-          whatsapp: ''
+          whatsapp: '',
+          companyId: ''
         });
       }
     }
@@ -118,6 +144,27 @@ const ContactForm = ({ contactToEdit, onSubmit, onCancel }) => {
           placeholder="Ej: 987654321"
         />
         {errors.whatsapp && <p className="text-red-500 text-xs mt-1">{errors.whatsapp}</p>}
+      </div>
+      
+      <div className="mb-4">
+        <label htmlFor="companyId" className="block text-gray-700 text-sm font-bold mb-2">
+          Empresa
+        </label>
+        <select
+          id="companyId"
+          name="companyId"
+          value={formData.companyId}
+          onChange={handleChange}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${errors.companyId ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'}`}
+        >
+          <option value="">Seleccione una empresa</option>
+          {companies.map(company => (
+            <option key={company.id} value={company.id}>
+              {company.name}
+            </option>
+          ))}
+        </select>
+        {errors.companyId && <p className="text-red-500 text-xs mt-1">{errors.companyId}</p>}
       </div>
       
       <div className="flex justify-end space-x-2">

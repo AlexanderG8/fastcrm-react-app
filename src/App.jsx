@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Templates from './pages/Templates';
 import Contacts from './pages/Contacts';
+import Companies from './pages/Companies';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,6 +22,7 @@ function App() {
             <div className="space-x-4">
               <Link to="/templates" className="hover:text-blue-200 transition-colors">Plantillas</Link>
               <Link to="/contacts" className="hover:text-blue-200 transition-colors">Contactos</Link>
+              <Link to="/companies" className="hover:text-blue-200 transition-colors">Empresas</Link>
             </div>
           </div>
         </nav>
@@ -38,10 +40,14 @@ function App() {
                 <Link to="/contacts" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
                   Gestionar Contactos
                 </Link>
+                <Link to="/companies" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                  Gestionar Empresas
+                </Link>
               </div>
             </div>} />
             <Route path="/templates" element={<Templates />} />
             <Route path="/contacts" element={<Contacts />} />
+            <Route path="/companies" element={<Companies />} />
           </Routes>
         </main>
         {/* Configuración de Toast */}

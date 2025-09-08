@@ -82,7 +82,9 @@ const Contacts = () => {
     try {
       const newContact = await createContact(contactData);
       // Actualizar ambos estados
-      const updatedContacts = [...allContacts, newContact];
+      const updatedContacts = [...allContacts, newContact.contact];
+      console.log(newContact);
+      console.log(updatedContacts);
       setAllContacts(updatedContacts);
       // Aplicar el filtro actual a la lista actualizada
       filterContacts(updatedContacts);

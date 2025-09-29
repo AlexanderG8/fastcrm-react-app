@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import ContactForm from '../components/ContactForm';
+import ContactLogForm from '../components/ContactLogForm';
 import { toast } from 'react-toastify';
 import { getContacts, createContact, updateContact, deleteContact } from '../services/contactService';
 
@@ -30,6 +31,10 @@ const Contacts = () => {
   
   // Estado para el término de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Estado para controlar el formulario de contacto (ContactLog)
+  const [showContactLogForm, setShowContactLogForm] = useState(false);
+  const [contactToLog, setContactToLog] = useState(null);
 
   // Función para obtener todos los contactos desde la API
   const fetchContacts = async () => {
@@ -271,6 +276,15 @@ const Contacts = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
+                        onClick={() => {
+                          setContactToLog(contact);
+                          setShowContactLogForm(true);
+                        }}
+                        className="text-green-600 hover:text-green-900 mr-3"
+                      >
+                        Contactar
+                      </button>
+                      <button
                          onClick={() => handleEditContact(contact)}
                          className="text-indigo-600 hover:text-indigo-900 mr-3"
                        >
@@ -294,6 +308,26 @@ const Contacts = () => {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Modal para el formulario de ContactLog */}
+      {showContactLogForm && contactToLog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <ContactLogForm 
+              contact={contactToLog}
+              onClose={() => {
+                setShowContactLogForm(false);
+                setContactToLog(null);
+              }}
+              onSuccess={() => {
+                setShowContactLogForm(false);
+                setContactToLog(null);
+                toast.success('Contacto registrado exitosamente');
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

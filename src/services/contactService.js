@@ -57,6 +57,7 @@ export const getContactById = async (id) => {
  * @returns {Promise<Object>} - Contacto creado
  */
 export const createContact = async (contactData) => {
+  contactData.companyId = parseInt(contactData.companyId, 10);
   const response = await fetch(`${API_URL}${ENDPOINTS.CONTACTS}`, {
     method: 'POST',
     headers: DEFAULT_HEADERS,

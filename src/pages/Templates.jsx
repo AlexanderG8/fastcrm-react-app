@@ -240,82 +240,75 @@ const Templates = () => {
         </div>
       </div>
 
-      {/* Listado de plantillas */}
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          {loading ? (
-            <div className="p-4 text-center text-gray-500">Cargando plantillas...</div>
-          ) : templates.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              No hay plantillas disponibles. ¡Crea una nueva!
-            </div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tipo
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contenido
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Etiquetas
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Autor
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {templates.map((template) => (
-                  <tr key={template._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{template.type}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500">{template.content}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {template.labels && template.labels.length > 0 ? (
-                          template.labels.map((labelObj, index) => (
-                            <span key={index} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                              {labelObj.label}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-sm text-gray-400">Sin etiquetas</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500 truncate max-w-xs">{template.author}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(template)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => deleteTemplate(template._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+      {/* Listado de plantillas en formato de tarjetas */}
+      {loading ? (
+        <div className="p-4 text-center text-gray-500">Cargando plantillas...</div>
+      ) : templates.length === 0 ? (
+        <div className="p-4 text-center text-gray-500 bg-white shadow-md rounded-lg">
+          No hay plantillas disponibles. ¡Crea una nueva!
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {templates.map((template) => (
+            <div key={template._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div className="p-5">
+                {/* Encabezado de la tarjeta */}
+                <div className="flex justify-between items-center mb-3">
+                  <div className="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                    {template.type}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {new Date(template.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+                
+                {/* Nombre de la plantilla */}
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{template.name}</h3>
+                
+                {/* Contenido de la plantilla */}
+                <div className="text-gray-600 mb-4 h-24 overflow-hidden">
+                  {template.content}
+                </div>
+                
+                {/* Etiquetas */}
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {template.labels && template.labels.length > 0 ? (
+                    template.labels.map((labelObj, index) => (
+                      <span key={index} className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                        {labelObj.label}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-gray-400">Sin etiquetas</span>
+                  )}
+                </div>
+                
+                {/* Botones de acción */}
+                <div className="flex justify-end space-x-2 pt-2 border-t border-gray-100">
+                  <button
+                    onClick={() => handleEdit(template)}
+                    className="text-blue-600 hover:text-blue-900 text-sm font-medium flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => deleteTemplate(template._id)}
+                    className="text-red-600 hover:text-red-900 text-sm font-medium flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

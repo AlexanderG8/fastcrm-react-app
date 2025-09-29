@@ -9,7 +9,8 @@ export const API_URL = 'http://localhost:3000';
 export const ENDPOINTS = {
   TEMPLATES: '/api/templates',
   CONTACTS: '/api/contacts',
-  COMPANIES: '/api/companies'
+  COMPANIES: '/api/companies',
+  CONTACT_LOGS: '/api/contactlogs'
 };
 
 // Configuración para las peticiones fetch

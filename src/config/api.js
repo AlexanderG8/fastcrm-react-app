@@ -3,7 +3,7 @@
  */
 
 // URL base de la API
-export const API_URL = 'http://localhost:3000';
+export const API_URL ="https://fastcrm-express-api-f791.onrender.com";
 
 // Endpoints de la API
 export const ENDPOINTS = {
